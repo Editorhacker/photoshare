@@ -9,7 +9,7 @@ export default function PhotoGrid({ photos }) {
       {photos.map((p) => (
         <img
           key={p.fileId}
-          src={`http://localhost:5000${p.viewUrl}`}
+          src={`https://photoshare-six.vercel.app${p.viewUrl}`}
           alt={p.name}
           style={{
             width: "100%",

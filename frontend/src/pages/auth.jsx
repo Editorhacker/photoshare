@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { 
-  createUserWithEmailAndPassword, 
+import {
+  createUserWithEmailAndPassword,
   sendEmailVerification,
-  signInWithEmailAndPassword    
+  signInWithEmailAndPassword
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../config/firebase";
 
-const BASE_URL = "http://localhost:5000/api/auth";
+const BASE_URL = "https://photoshare-six.vercel.app/api/auth";
 
 const Auth = () => {
   const navigate = useNavigate();
