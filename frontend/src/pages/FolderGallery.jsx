@@ -9,7 +9,7 @@ import { useAuth } from "../context/AuthContext";
 const FolderGallery = () => {
   const { folderId } = useParams();
   const navigate = useNavigate();
-  const { currentUser } = useAuth(); // Guaranteed loaded
+  const { currentUser } = useAuth();
   const fileInputRef = useRef(null);
 
   const [images, setImages] = useState([]);
@@ -28,15 +28,13 @@ const FolderGallery = () => {
   }, [currentUser]);
 
   const fetchImages = async () => {
-    if (!currentUser) return; // Guard clause
+    if (!currentUser) return;
 
     try {
       const token = await currentUser.getIdToken();
       const res = await fetch(
         `${API_BASE_URL}/api/drive/list-images?folderId=${folderId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       const data = await res.json();
@@ -51,15 +49,12 @@ const FolderGallery = () => {
   const uploadImages = async (e) => {
     const files = e.target.files;
     if (!files.length) return;
-    if (!currentUser) {
-      alert("Please log in to upload images");
-      return;
-    }
 
     setUploading(true);
 
     try {
       const token = await currentUser.getIdToken();
+
       for (let file of files) {
         const formData = new FormData();
         formData.append("image", file);
@@ -71,11 +66,11 @@ const FolderGallery = () => {
           body: formData,
         });
       }
+
       setTimeout(() => {
         fetchImages();
         setUploading(false);
-      }, 1500);
-
+      }, 1200);
     } catch (err) {
       console.error(err);
       setUploading(false);
@@ -84,22 +79,17 @@ const FolderGallery = () => {
   };
 
   const handleShare = async () => {
-    if (!currentUser) {
-      alert("Please log in to share");
-      return;
-    }
-
     try {
       const token = await currentUser.getIdToken();
       const res = await fetch(`${API_BASE_URL}/api/drive/share-folder`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           folderId,
-          days: expiryDays ? parseInt(expiryDays) : null
+          days: expiryDays ? parseInt(expiryDays) : null,
         }),
       });
 
@@ -110,7 +100,6 @@ const FolderGallery = () => {
       setShareLink(link);
       setShowShareModal(false);
 
-      // Copy to clipboard
       navigator.clipboard.writeText(link);
       alert("Link generated and copied to clipboard!");
     } catch (err) {
@@ -120,33 +109,28 @@ const FolderGallery = () => {
 
   return (
     <Layout>
-      <div className="container animate-fade-in" style={{
-        height: "calc(100vh - 160px)", // Fixed height to prevent full page scroll
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        marginTop: "20px"
-      }}>
+      <div className="container animate-fade-in px-4 md:px-8 lg:px-10 py-5 h-[calc(100vh-140px)] flex flex-col">
 
-        {/* Header - Fixed at top of flex container */}
-        <div style={{
-          flexShrink: 0,
-          padding: '10px 0 20px 0',
-          borderBottom: '1px solid rgba(255,255,255,0.05)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '20px'
-        }}>
-          <div className="flex-center" style={{ gap: "10px" }}>
-            <Button variant="secondary" onClick={() => navigate("/dashboard")} style={{ padding: "8px 12px" }}>
+        {/* HEADER */}
+        <div className="flex-shrink-0 mt-4 pb-4 mb-4 border-b border-[rgba(255,255,255,0.05)] 
+                        flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
+          <div className="flex items-center gap-3">
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/dashboard")}
+              className="px-2 py-1"
+            >
               ←
             </Button>
-            <h2 style={{ margin: 0 }}>Gallery</h2>
+            <h2 className="text-lg mt-2 md:text-xl font-semibold">Gallery</h2>
           </div>
 
-          <div style={{ display: "flex", gap: "10px" }}>
-            <Button variant="secondary" onClick={() => setShowShareModal(true)}>
+          <div className="flex justify-between gap-3">
+            <Button
+              variant="secondary"
+              onClick={() => setShowShareModal(true)}
+            >
               Share Gallery
             </Button>
 
@@ -154,112 +138,132 @@ const FolderGallery = () => {
               type="file"
               multiple
               accept="image/*"
-              style={{ display: "none" }}
+              className="hidden"
               ref={fileInputRef}
               onChange={uploadImages}
             />
-            <Button onClick={() => fileInputRef.current.click()} disabled={uploading}>
+
+            <Button
+              onClick={() => fileInputRef.current.click()}
+              disabled={uploading}
+            >
               {uploading ? "Uploading..." : "Upload Photos"}
             </Button>
           </div>
         </div>
 
-        {/* Scrollable Grid Area */}
-        <div style={{
-          flex: 1,
-          overflowY: "auto",
-          paddingRight: "10px",
-          paddingBottom: "20px"
-        }}>
+        {/* SCROLLABLE CONTENT */}
+        <div className="flex-1 overflow-y-auto pr-1 pb-5">
 
+          {/* ACTIVE SHARE LINK */}
           {shareLink && (
-            <div style={{
-              background: "rgba(16, 185, 129, 0.1)",
-              border: "1px solid rgba(16, 185, 129, 0.2)",
-              padding: "15px",
-              borderRadius: "8px",
-              marginBottom: "20px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center"
-            }}>
-              <span style={{ color: "#6ee7b7", fontSize: "0.9rem" }}>Active Link: {shareLink}</span>
+            <div className="mb-4 p-4 rounded-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+              style={{
+                background: "rgba(16, 185, 129, 0.1)",
+                border: "1px solid rgba(16, 185, 129, 0.2)"
+              }}
+            >
+              <span className="text-sm text-[#6ee7b7] break-all">
+                Active Link: {shareLink}
+              </span>
+
               <Button
                 variant="secondary"
                 onClick={() => {
                   navigator.clipboard.writeText(shareLink);
                   alert("Copied!");
                 }}
-                style={{ padding: "4px 10px", fontSize: "0.8rem" }}
+                className="px-3 py-1 text-xs"
               >
                 Copy Again
               </Button>
             </div>
           )}
 
+          {/* LOADING */}
           {loading ? (
-            <div className="flex-center" style={{ height: "200px" }}>
-              <p className="animate-pulse">Loading images...</p>
+            <div className="flex items-center justify-center h-[200px]">
+              <p className="animate-pulse text-[var(--text-muted)]">
+                Loading images...
+              </p>
             </div>
           ) : images.length === 0 ? (
-            <div className="glass-card" style={{ padding: "60px", textAlign: "center" }}>
+
+            /* EMPTY STATE */
+            <div className="glass-card p-8 md:p-12 text-center max-w-[600px] mx-auto">
               <p>No images in this folder yet.</p>
               <Button
                 variant="secondary"
                 onClick={() => fileInputRef.current.click()}
-                style={{ marginTop: "20px" }}
+                className="mt-5"
               >
                 Upload your first photo
               </Button>
             </div>
+
           ) : (
-            <div className="grid-gallery">
-              {images.map((img) => (
-                <div
-                  key={img.id}
-                  className="card"
-                  style={{ padding: 0, overflow: "hidden", border: "none" }}
-                >
-                  <img
-                    src={img.thumbnailLink}
-                    alt={img.name}
-                    loading="lazy"
-                    style={{
-                      width: "100%",
-                      height: "250px",
-                      objectFit: "cover",
-                      display: "block",
-                      transition: "transform 0.3s ease"
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                    onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
-                  />
-                  <div style={{ padding: "12px" }}>
-                    <p style={{ fontSize: "0.85rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "var(--text-main)" }}>
-                      {img.name}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+
+            /* RESPONSIVE IMAGE GRID */
+            <div
+  className="
+    grid 
+    grid-cols-1              /* smaller tiles on mobile */
+    sm:grid-cols-2 
+    md:grid-cols-3 
+    lg:grid-cols-3 
+    xl:grid-cols-3 
+    gap-3 md:gap-4           /* tighter gap on mobile, normal on desktop */
+  "
+>
+  {images.map((img) => (
+    <div
+      key={img.id}
+      className="card overflow-hidden border-none p-0"
+    >
+      <img
+        src={img.thumbnailLink}
+        alt={img.name}
+        loading="lazy"
+        className="
+          w-full 
+          h-[160px] sm:h-[200px] md:h-[240px] lg:h-[260px]
+          object-cover 
+          transition-transform duration-300
+          hover:scale-105
+        "
+      />
+
+      <div className="p-2 md:p-3">
+        <p className="text-xs md:text-sm truncate text-[var(--text-main)]">
+          {img.name}
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
+
           )}
         </div>
 
-        {/* Share Modal */}
+        {/* SHARE MODAL */}
         {showShareModal && (
-          <div style={{
-            position: "fixed", inset: 0,
-            background: "rgba(0,0,0,0.6)", backdropFilter: "blur(5px)",
-            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
-          }}>
-            <div className="glass-card animate-fade-in" style={{ width: "90%", maxWidth: "400px", padding: "30px" }}>
-              <h3 style={{ marginBottom: "10px" }}>Share Gallery</h3>
-              <p style={{ marginBottom: "20px", fontSize: "0.9rem", color: "var(--text-muted)" }}>
+          <div className="
+            fixed inset-0 bg-black/60 backdrop-blur-md
+            flex items-center justify-center z-[1000]
+          ">
+            <div className="
+              glass-card animate-fade-in
+              w-[90%] max-w-[420px] p-6 md:p-7
+            ">
+              <h3 className="mb-2 text-lg font-semibold">Share Gallery</h3>
+              <p className="mb-4 text-sm text-[var(--text-muted)]">
                 Generate a public link for clients to download selections.
               </p>
 
-              <div style={{ marginBottom: "20px" }}>
-                <label style={{ display: "block", marginBottom: "8px", fontSize: "0.9rem" }}>Link Expiration (Days)</label>
+              <div className="mb-5">
+                <label className="block mb-2 text-sm">
+                  Link Expiration (Days)
+                </label>
                 <Input
                   type="number"
                   placeholder="e.g. 7 (Leave empty for no expiry)"
@@ -269,9 +273,17 @@ const FolderGallery = () => {
                 />
               </div>
 
-              <div style={{ display: "flex", gap: "10px", marginTop: "20px", justifyContent: "flex-end" }}>
-                <Button variant="secondary" onClick={() => setShowShareModal(false)}>Cancel</Button>
-                <Button onClick={handleShare}>Generate Link</Button>
+              <div className="flex gap-3 justify-end">
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowShareModal(false)}
+                >
+                  Cancel
+                </Button>
+
+                <Button onClick={handleShare}>
+                  Generate Link
+                </Button>
               </div>
             </div>
           </div>

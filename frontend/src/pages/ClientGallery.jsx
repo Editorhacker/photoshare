@@ -133,28 +133,35 @@ const ClientGallery = () => {
         }}>
 
             {/* Header - Sticky */}
-            <div style={{
-                padding: "20px 40px",
-                background: "rgba(0,0,0,0.8)",
-                backdropFilter: "blur(10px)",
-                borderBottom: "1px solid rgba(255,255,255,0.1)",
-                position: "sticky",
-                top: 0,
-                zIndex: 50,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center"
-            }}>
-                <h1 style={{ fontSize: "1.5rem", color: "white", margin: 0 }}>
+            <div
+                className="
+    sticky top-0 z-50
+    bg-[rgba(0,0,0,0.8)] backdrop-blur-[10px]
+    border-b border-white/10
+    px-4 md:px-10 py-4
+    flex flex-col sm:flex-row
+    sm:items-center sm:justify-between
+    gap-3 items-center
+  "
+            >
+                <h1 className="text-xl md:text-2xl text-white m-0">
                     <span style={{ color: "var(--primary)" }}>✦</span> PhotoShare Gallery
                 </h1>
 
                 {selectedImages.size > 0 && (
-                    <Button onClick={handleDownloadSelection} style={{ fontSize: "0.9rem", padding: "8px 16px" }}>
+                    <Button
+                        onClick={handleDownloadSelection}
+                        className="
+        text-[8px] md:text-xs
+        px-4 py-4
+        w-fit sm:w-auto
+      "
+                    >
                         Download Selection ({selectedImages.size})
                     </Button>
                 )}
             </div>
+
 
             {/* Grid */}
             <div className="container" style={{ padding: "40px 40px" }}>
@@ -245,7 +252,8 @@ const ClientGallery = () => {
                         zIndex: 100,
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center"
+                        justifyContent: "center",
+                        height: "100vh"
                     }}
                         onClick={() => setViewingImage(null)}
                     >
@@ -268,7 +276,7 @@ const ClientGallery = () => {
                                     border: "1px solid rgba(255,255,255,0.2)",
                                     color: "white",
                                     fontSize: "2rem",
-                                    width: "60px", height: "60px",
+                                    width: "50px", height: "50px",
                                     borderRadius: "50%",
                                     cursor: "pointer",
                                     zIndex: 102,
@@ -295,7 +303,7 @@ const ClientGallery = () => {
                                     border: "1px solid rgba(255,255,255,0.2)",
                                     color: "white",
                                     fontSize: "2rem",
-                                    width: "60px", height: "60px",
+                                    width: "50px", height: "50px",
                                     borderRadius: "50%",
                                     cursor: "pointer",
                                     zIndex: 102,

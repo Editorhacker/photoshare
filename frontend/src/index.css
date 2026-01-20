@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
 
 :root {
   /* Color Palette - Deep Premium Dark */
@@ -109,7 +111,7 @@ a:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 28px;
+  padding: 8px 24px;
   background: var(--primary);
   color: white;
   border: none;
@@ -244,7 +246,7 @@ a:hover {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
-  
+
   overflow-y: auto;
 }
 
