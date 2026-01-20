@@ -42,11 +42,11 @@
   --transition-smooth: 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-html,
-body {
-  height: 100%;
+html, body {
   margin: 0;
   padding: 0;
+  background: #000;
+  overscroll-behavior: none;   /* prevents white bounce flash */
 }
 
 #root {
