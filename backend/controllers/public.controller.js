@@ -59,7 +59,8 @@ exports.listPublicPhotos = async (req, res) => {
       fileId: f.id,
       name: f.name,
       mimeType: f.mimeType,
-      viewUrl: `/api/public/view/${f.id}` // secure endpoint
+      viewUrl: `/api/public/view/${f.id}?shareToken=${shareToken}`
+ // secure endpoint
     }));
 
     res.json({
@@ -78,33 +79,39 @@ exports.listPublicPhotos = async (req, res) => {
 exports.streamPublicPhoto = async (req, res) => {
   try {
     const { fileId } = req.params;
+    const { shareToken } = req.query;
 
-    // Find which album this belongs to
-    const albumsSnap = await db.collection("albums").get();
-
-    let ownerUid = null;
-
-    for (const doc of albumsSnap.docs) {
-      const album = doc.data();
-      if (album.ownerUid) {
-        ownerUid = album.ownerUid;
-        break;
-      }
+    if (!shareToken) {
+      return res.status(400).json({ message: "Missing shareToken" });
     }
 
-    if (!ownerUid) {
-      return res.status(404).json({ message: "Image owner not found" });
+    // 1️⃣ Find album by shareToken
+    const snap = await db
+      .collection("albums")
+      .where("shareToken", "==", shareToken)
+      .limit(1)
+      .get();
+
+    if (snap.empty) {
+      return res.status(404).json({ message: "Invalid gallery link" });
     }
 
-    // Get owner's tokens
+    const album = snap.docs[0].data();
+    const ownerUid = album.ownerUid;
+
+    // 2️⃣ Get owner tokens
     const userSnap = await db
       .collection("photographers")
       .doc(ownerUid)
       .get();
 
-    const userData = userSnap.data();
-    const drive = await getDriveClientWithTokens(userData.driveTokens);
+    if (!userSnap.exists || !userSnap.data().driveTokens) {
+      return res.status(403).json({ message: "Drive not connected" });
+    }
 
+    const drive = await getDriveClientWithTokens(userSnap.data().driveTokens);
+
+    // 3️⃣ Stream image
     const driveRes = await drive.files.get(
       { fileId, alt: "media" },
       { responseType: "stream" }
@@ -116,7 +123,7 @@ exports.streamPublicPhoto = async (req, res) => {
     driveRes.data.pipe(res);
 
   } catch (err) {
-    console.error(err);
+    console.error("Public stream error:", err.message);
     res.status(500).json({ error: "Failed to stream image" });
   }
 };
