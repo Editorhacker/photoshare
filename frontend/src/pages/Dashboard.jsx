@@ -112,7 +112,7 @@ const Dashboard = () => {
       <div className="container animate-fade-in px-6 md:px-10 py-8">
 
         {/* HEADER */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
+        <div className="flex flex-col mt-10 sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
           <h1 className="text-2xl font-semibold">Dashboard</h1>
 
           {driveConnected && (
