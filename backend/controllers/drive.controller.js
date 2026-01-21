@@ -39,21 +39,25 @@ exports.driveCallback = async (req, res) => {
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
 
-    // Save tokens in Firestore
-    await db.collection("photographers").doc(uid).update({
-      googleDriveConnected: true,
-      driveTokens: tokens,
-      driveConnectedAt: new Date(),
-    });
+    // ✅ SAFE: creates doc if missing, updates if exists
+    await db.collection("photographers").doc(uid).set(
+      {
+        googleDriveConnected: true,
+        driveTokens: tokens,
+        driveConnectedAt: new Date(),
+      },
+      { merge: true }
+    );
 
-    // Redirect back to frontend dashboard
+    // ✅ Redirect immediately (do NOT stay on callback URL)
     res.redirect(`${process.env.FRONTEND_URL}/dashboard?drive=connected`);
 
   } catch (err) {
     console.error("Drive callback error:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Drive connection failed" });
   }
 };
+
 
 /* ----------------------------------------------------
   3) CREATE FOLDER IN USER'S DRIVE
