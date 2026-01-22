@@ -49,3 +49,32 @@ PhotoShare is a full-stack web application that allows photographers to upload c
 ## 📂 Project Structure
 
 ### Backend
+├── src/
+│ ├── app.js
+│ ├── routes/
+│ │ ├── auth.routes.js
+│ │ ├── drive.routes.js
+│ │ ├── album.routes.js
+│ │ └── public.routes.js
+│ ├── controllers/
+│ ├── services/
+│ │ └── drive.service.js
+│ ├── middleware/
+│ └── config/
+├── server.js
+└── serviceAccountKey.json
+
+
+### Frontend
+photoshare-frontend/
+├── src/
+│ ├── App.jsx
+│ ├── main.jsx
+│ ├── api.js
+│ ├── pages/
+│ │ ├── Login.jsx
+│ │ ├── Gallery.jsx
+│ │ └── Share.jsx
+│ └── components/
+│ └── PhotoGrid.jsx
+└── package.json
